@@ -3,6 +3,7 @@ version: '3'
 services:
   server:
     image: jetbrains/teamcity-server:latest
+    restart: always
     networks:
       - web
       - default
@@ -11,7 +12,7 @@ services:
       - "/opt/teamcity/logs:/opt/teamcity/logs"
     hostname: ${VIRTUAL_HOST}
     ports:
-      - "8111"
+      - "8111:8111"
     depends_on:
       - postgres
     env_file: .env
@@ -29,13 +30,37 @@ services:
         max-size: "10m"
         max-file: "5"
 
+  #agent:
+  #  build: ./agents/bundler-ruby
+  #  env_file: .env
+  #  restart: always
+  #  environment:
+  #    SERVER_URL: http://server:8111
+    #     if you need docker inside the agent
+    #     (http://jpetazzo.github.io/2015/09/03/do-not-use-docker-in-docker-for-ci/)
+  #  volumes:
+  #    - "/var/run/docker.sock:/var/run/docker.sock"
+  #  depends_on:
+  #    - server
+  #  labels:
+  #    - "traefik.enable=false"
+  #  logging:
+  #    driver: json-file
+  #    options:
+  #      max-size: "10m"
+  #      max-file: "5"
   agent:
-    build: ./agents/python-node-yarn
+    image: redfolder/teamcity-agent-docker-compose
     env_file: .env
+    restart: always
+    environment:
+      SERVER_URL: http://server:8111
     #     if you need docker inside the agent
     #     (http://jpetazzo.github.io/2015/09/03/do-not-use-docker-in-docker-for-ci/)
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
+    depends_on:
+      - server
     labels:
       - "traefik.enable=false"
     logging:
@@ -46,6 +71,7 @@ services:
 
   postgres:
     build: ./postgres
+    restart: always
     volumes:
       - "/opt/teamcity/pg_data:/var/lib/postgresql/data"
       - "/opt/teamcity/pg_backup:/backups"
@@ -58,28 +84,28 @@ services:
         max-size: "10m"
         max-file: "5"
 
-  traefik:
-    image: traefik:1.7-alpine
-    restart: on-failure
-    command:
-      - --logLevel=ERROR
-      - --docker
-      - --docker.watch=true
-      - --docker.exposedByDefault=false
-      - --docker.domain=docker.localhost
-      - --defaultEntryPoints=http
-      - --entryPoints=Name:http Address::80
-    ports:
-      - "80:80"
-    networks:
-      - web
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    logging:
-      driver: json-file
-      options:
-        max-size: "10m"
-        max-file: "5"
+  #traefik:
+  #  image: traefik:1.7-alpine
+  #  restart: on-failure
+  #  command:
+  #    - --logLevel=ERROR
+  #    - --docker
+  #    - --docker.watch=true
+  #    - --docker.exposedByDefault=false
+  #    - --docker.domain=docker.localhost
+  #    - --defaultEntryPoints=http
+  #    - --entryPoints=Name:http Address::80
+  #  ports:
+  #    - "80:80"
+  #  networks:
+  #    - web
+  #  volumes:
+  #    - /var/run/docker.sock:/var/run/docker.sock
+  #  logging:
+  #    driver: json-file
+  #    options:
+  #      max-size: "10m"
+  #      max-file: "5"
 
 networks:
   web:
