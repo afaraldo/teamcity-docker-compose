@@ -30,8 +30,30 @@ services:
         max-size: "10m"
         max-file: "5"
 
+  agent:
+    build: ./agents/bundler-ruby
+    env_file: .env
+    restart: always
+    networks:
+      - web
+      - default
+    environment:
+      SERVER_URL: http://server:8111
+    #     if you need docker inside the agent
+    #     (http://jpetazzo.github.io/2015/09/03/do-not-use-docker-in-docker-for-ci/)
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    depends_on:
+      - server
+    labels:
+      - "traefik.enable=false"
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
   #agent:
-  #  build: ./agents/bundler-ruby
+  #  image: redfolder/teamcity-agent-docker-compose
   #  env_file: .env
   #  restart: always
   #  environment:
@@ -49,25 +71,6 @@ services:
   #    options:
   #      max-size: "10m"
   #      max-file: "5"
-  agent:
-    image: redfolder/teamcity-agent-docker-compose
-    env_file: .env
-    restart: always
-    environment:
-      SERVER_URL: http://server:8111
-    #     if you need docker inside the agent
-    #     (http://jpetazzo.github.io/2015/09/03/do-not-use-docker-in-docker-for-ci/)
-    volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock"
-    depends_on:
-      - server
-    labels:
-      - "traefik.enable=false"
-    logging:
-      driver: json-file
-      options:
-        max-size: "10m"
-        max-file: "5"
 
   postgres:
     build: ./postgres
@@ -78,6 +81,8 @@ services:
     env_file: .env
     labels:
       - "traefik.enable=false"
+    ports:
+      - "5432:5432"
     logging:
       driver: json-file
       options:
@@ -106,6 +111,19 @@ services:
   #    options:
   #      max-size: "10m"
   #      max-file: "5"
+  
+  #db:
+  #  restart: "always"
+  #  image: postgres:9.6
+  #  volumes:
+  #    - /tmp/db:/var/lib/postgresql/data
+  #  environment:
+  #    POSTGRES_USER: ih
+  #    POSTGRES_DB: sanatorio_app_development
+  #    POSTGRES_PASSWORD: oGJWLsFX7s1b
+  #    DB_EXTENSION: 'unaccent,pg_trgm'
+  #  ports:
+  #    - "5432:5432"
 
 networks:
   web:
