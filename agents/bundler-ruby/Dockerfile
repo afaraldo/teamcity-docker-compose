@@ -5,7 +5,11 @@ USER root
 LABEL maintainer=yaronidan@gmail.com
 
 RUN apt-get update && apt-get -y install \
-    curl gpg git
+    curl gpg git xvfb wget
+
+RUN wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+
+RUN apt install -y ./google-chrome-stable_current_amd64.deb
 
 RUN curl -sSL https://rvm.io/pkuczynski.asc | gpg --import -
 
