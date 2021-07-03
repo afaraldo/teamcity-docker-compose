@@ -32,8 +32,9 @@ services:
 
   agent_1:
     build: ./agents/bundler-ruby
-    env_file: .env
     restart: always
+    env_file: .env
+    privileged: true
     networks:
       - web
       - default
@@ -56,8 +57,9 @@ services:
   
   agent_2:
     build: ./agents/bundler-ruby
-    env_file: .env
     restart: always
+    env_file: .env
+    privileged: true
     networks:
       - web
       - default
@@ -80,8 +82,9 @@ services:
 
   agent_3:
     build: ./agents/bundler-ruby
-    env_file: .env
     restart: always
+    env_file: .env
+    privileged: true
     networks:
       - web
       - default
