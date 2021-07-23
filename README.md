@@ -16,7 +16,7 @@ Compose to create working [TeamCity](https://www.jetbrains.com/teamcity/) server
 Clone this repository or download the zip.
 
 ```
-git clone https://github.com/egregors/teamcity-docker-compose.git
+git clone https://github.com/afaraldo/teamcity-docker-compose.git
 ```
 
 ## Configuration
