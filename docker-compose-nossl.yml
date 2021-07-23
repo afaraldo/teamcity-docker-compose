@@ -10,6 +10,7 @@ services:
     volumes:
       - "/opt/teamcity/data:/data/teamcity_server/datadir"
       - "/opt/teamcity/logs:/opt/teamcity/logs"
+      - "/etc/timezone:/etc/timezone"
     hostname: ${VIRTUAL_HOST}
     ports:
       - "8111:8111"
@@ -45,6 +46,7 @@ services:
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
       - "/opt/buildagent1/config:/data/teamcity_agent/conf"
+      - "/etc/timezone:/etc/timezone"
     depends_on:
       - server
     labels:
@@ -70,6 +72,7 @@ services:
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
       - "/opt/buildagent2/config:/data/teamcity_agent/conf"
+      - "/etc/timezone:/etc/timezone"
     depends_on:
       - server
     labels:
@@ -95,6 +98,7 @@ services:
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
       - "/opt/buildagent3/config:/data/teamcity_agent/conf"
+      - "/etc/timezone:/etc/timezone"
     depends_on:
       - server
     labels:
